@@ -1,5 +1,3 @@
-import socket
-
 import proxy_server
 
 HOSTNAME = ''

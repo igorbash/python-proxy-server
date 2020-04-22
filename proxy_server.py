@@ -6,10 +6,17 @@ MAX_REQUEST_LEN = 4096
 CONNECTION_TIMEOUT = 10
 
 
+class ProxyServerMeta(type):
+    _instance = None
+
+    def __call__(cls, *args):
+        if cls._instance is None:
+            cls._instance = super().__call__(*args)
+        return cls._instance
+
+
 # TODO: handle failures
-# TODO: add prints
-# TODO: make singleton
-class ProxyServer:
+class ProxyServer(metaclass=ProxyServerMeta):
     def __init__(self, host: str, port: int):
         self.__host = host
         self.__port = port
@@ -56,7 +63,7 @@ class ProxyServer:
     def __get_url_and_port(request: bytes):
         # TODO: get specific port - if not only http
         url = request.split(b'\n\r\n')[0].split(b' ')[1]
-        url = url[url.find(b'://') + 3:len(url)-1]
+        url = url[url.find(b'://') + 3:len(url) - 1]
         port = 80
         return url, port
 
