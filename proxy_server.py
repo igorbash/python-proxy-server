@@ -33,9 +33,9 @@ class ProxyServer(ProxyServerAbstract):
     def _make_request(client_connection: socket.socket, client_address):
         try:
             request = client_connection.recv(MAX_REQUEST_LEN)
-
             headers = http_headers.HttpHeaders(request)
-            (url, port) = headers.http_headers['Host'].encode(), 80
+            (url, port) = headers.get_host_name_and_port()
+            headers.change_user_agent()
 
             server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_connection.settimeout(CONNECTION_TIMEOUT)
