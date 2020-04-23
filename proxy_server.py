@@ -4,7 +4,6 @@ from threading import Thread
 from proxy_server_abstract import ProxyServerAbstract, CONNECTION_TIMEOUT, MAX_CONNECTIONS, MAX_REQUEST_LEN
 
 
-# TODO: handle failures
 class ProxyServer(ProxyServerAbstract):
     def __init__(self, host: str, port: int):
         super().__init__(host, port)
@@ -30,19 +29,23 @@ class ProxyServer(ProxyServerAbstract):
 
     @staticmethod
     def _make_request(client_connection: socket.socket, client_address):
-        request = client_connection.recv(MAX_REQUEST_LEN)
+        try:
+            request = client_connection.recv(MAX_REQUEST_LEN)
 
-        (url, port) = ProxyServer._get_url_and_port(request)
+            (url, port) = ProxyServer._get_url_and_port(request)
 
-        server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_connection.settimeout(CONNECTION_TIMEOUT)
-        server_connection.connect((url, port))
-        print(f'Connected to server: {url.decode()} on port: {port}')
+            server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server_connection.settimeout(CONNECTION_TIMEOUT)
+            server_connection.connect((url, port))
+            print(f'Connected to server: {url.decode()} on port: {port}')
 
-        ProxyServer._send_data_to_server(server_connection, request)
-        ProxyServer._receive_and_send_data_to_client(server_connection, client_connection)
-        server_connection.close()
-        client_connection.close()
+            ProxyServer._send_data_to_server(server_connection, request)
+            ProxyServer._receive_and_send_data_to_client(server_connection, client_connection)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server_connection.close()
+            client_connection.close()
 
         print(f'Done client {client_address} request\n')
 
