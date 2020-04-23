@@ -1,7 +1,9 @@
 import socket
 from threading import Thread
+from email import message_from_string
 
 from proxy_server_abstract import ProxyServerAbstract, CONNECTION_TIMEOUT, MAX_CONNECTIONS, MAX_REQUEST_LEN
+import http_headers
 
 
 class ProxyServer(ProxyServerAbstract):
@@ -32,14 +34,15 @@ class ProxyServer(ProxyServerAbstract):
         try:
             request = client_connection.recv(MAX_REQUEST_LEN)
 
-            (url, port) = ProxyServer._get_url_and_port(request)
+            headers = http_headers.HttpHeaders(request)
+            (url, port) = headers.http_headers['Host'].encode(), 80
 
             server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_connection.settimeout(CONNECTION_TIMEOUT)
             server_connection.connect((url, port))
             print(f'Connected to server: {url.decode()} on port: {port}')
 
-            ProxyServer._send_data_to_server(server_connection, request)
+            ProxyServer._send_data_to_server(server_connection, headers.create_raw_request())
             ProxyServer._receive_and_send_data_to_client(server_connection, client_connection)
         except KeyboardInterrupt:
             pass

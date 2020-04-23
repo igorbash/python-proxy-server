@@ -23,11 +23,3 @@ class ProxyServerAbstract(ABC, metaclass=ProxyServerMeta):
     @abstractmethod
     def accept_requests(self):
         pass
-
-    @staticmethod
-    def _get_url_and_port(request: bytes):
-        # TODO: get specific port - if not only http
-        url = request.split(b'\n\r\n')[0].split(b' ')[1]
-        url = url[url.find(b'://') + 3:len(url) - 1]
-        port = 80
-        return url, port
