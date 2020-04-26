@@ -1,14 +1,14 @@
 import socket
 from threading import Thread
 
-from proxy_server_abstract import ProxyServerAbstract, CONNECTION_TIMEOUT, MAX_CONNECTIONS, MAX_REQUEST_LEN
-from http_headers import HttpHeaders
+from proxy_server.proxy_server_abstract import ProxyServerAbstract, CONNECTION_TIMEOUT, MAX_CONNECTIONS, MAX_REQUEST_LEN
+from utils.http_headers import HttpHeaders
 
 
 class ProxyServer(ProxyServerAbstract):
     def __init__(self, host: str, port: int):
         super().__init__(host, port)
-        with open('domains_blacklist') as blacklist:
+        with open('../data/domains_blacklist') as blacklist:
             self._blacklist = blacklist.readlines()
         self.__server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -86,6 +86,6 @@ class ProxyServer(ProxyServerAbstract):
         client_connection.send(b'HTTP/1.0 200 OK\n')
         client_connection.send(b'Content-Type: text/html\n')
         client_connection.send(b'\n')
-        with open('human_rights.html') as human_rights_page:
+        with open('../data/human_rights.html') as human_rights_page:
             for line in human_rights_page.readlines():
                 client_connection.send(line.encode())
