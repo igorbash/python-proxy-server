@@ -8,7 +8,7 @@ from utils.http_headers import HttpHeaders
 class ProxyServer(ProxyServerAbstract):
     def __init__(self, host: str, port: int):
         super().__init__(host, port)
-        with open('../data/domains_blacklist') as blacklist:
+        with open('data/domains_blacklist') as blacklist:
             self._blacklist = blacklist.readlines()
         self.__server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
