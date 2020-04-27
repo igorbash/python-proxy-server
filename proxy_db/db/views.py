@@ -1,31 +1,52 @@
-from .models import User, Cookie, Credential
-from rest_framework import viewsets
-from rest_framework import permissions
-from db.serializers import UserSerializer, CookieSerializer, CredentialSerializer
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+
+from .models import Client, Cookie, Credential
+from db.serializers import CookieSerializer, CredentialSerializer, ClientSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class ClientListCreateAPIView(ListCreateAPIView):
     """
-    API endpoint that allows users to be viewed or edited.
+    API view to retrieve list of posts or create new
     """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ClientSerializer
+    queryset = Client.objects.all()
 
 
-class CookieViewSet(viewsets.ModelViewSet):
+class ClientDetailsAPIView(RetrieveUpdateDestroyAPIView):
     """
-    API endpoint that allows users to be viewed or edited.
+    API view to retrieve, update or delete post
     """
-    queryset = Cookie.objects.all()
+    serializer_class = ClientSerializer
+    queryset = Client.objects.all()
+
+
+class CookieListCreateAPIView(ListCreateAPIView):
+    """
+    API view to retrieve list of posts or create new
+    """
     serializer_class = CookieSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    queryset = Cookie.objects.all()
 
 
-class CredentialViewSet(viewsets.ModelViewSet):
+class CookieDetailsAPIView(RetrieveUpdateDestroyAPIView):
     """
-    API endpoint that allows users to be viewed or edited.
+    API view to retrieve, update or delete post
     """
-    queryset = Credential.objects.all()
+    serializer_class = CookieSerializer
+    queryset = Cookie.objects.all()
+
+
+class CredentialListCreateAPIView(ListCreateAPIView):
+    """
+    API view to retrieve list of posts or create new
+    """
     serializer_class = CredentialSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    queryset = Credential.objects.all()
+
+
+class CredentialDetailsAPIView(RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update or delete post
+    """
+    serializer_class = CredentialSerializer
+    queryset = Credential.objects.all()

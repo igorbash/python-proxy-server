@@ -1,20 +1,24 @@
-from .models import User, Cookie, Credential
+from .models import Client, Cookie, Credential
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class ClientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['id']
+        model = Client
+        fields = ['ip']
 
 
-class CookieSerializer(serializers.HyperlinkedModelSerializer):
+class CookieSerializer(serializers.ModelSerializer):
+    user_ip = ClientSerializer()
+
     class Meta:
         model = Cookie
-        fields = ['user_id', 'cookie']
+        fields = ['user_ip', 'cookie', 'host']
 
 
-class CredentialSerializer(serializers.HyperlinkedModelSerializer):
+class CredentialSerializer(serializers.ModelSerializer):
+    user_ip = ClientSerializer()
+
     class Meta:
         model = Credential
-        fields = ['user_id', 'token']
+        fields = ['user_ip', 'token', 'host']
