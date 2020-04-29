@@ -2,8 +2,8 @@ import requests
 
 
 class ProxyDbUtils:
-    def __init__(self, base_url=None):
-        self._base_url = base_url or 'http://127.0.0.1:8000/'
+    def __init__(self, base_url='http://127.0.0.1:8000/'):
+        self._base_url = base_url
         self._clients_url = base_url + 'clients/'
         self._cookies_url = base_url + 'cookies/'
         self._credentials_url = base_url + 'credentials/'
@@ -31,9 +31,10 @@ class ProxyDbUtils:
             return response.json()['results']
         return None
 
-    def add_cookie(self, client_ip: str, cookie: str, host: str):
+    def add_cookie(self, client_ip: str, cookie_name: str, cookie: str, host: str):
         cookie_json = {
             'user_ip': client_ip,
+            'cookie_name': cookie_name,
             'cookie': cookie,
             'host': host
         }

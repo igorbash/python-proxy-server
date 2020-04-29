@@ -5,7 +5,7 @@ from rest_framework import serializers
 class CookieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cookie
-        fields = ['user_ip', 'cookie', 'host']
+        fields = ['user_ip', 'cookie_name', 'cookie', 'host']
 
 
 class CredentialSerializer(serializers.ModelSerializer):

@@ -46,4 +46,11 @@ class HttpHeaders:
             return hostname_port[0].encode(), 80
         return hostname_port[0].encode(), int(hostname_port[1])
 
+    def get_host(self):
+        return self.get_host_name_and_port()[0]
 
+    def get_cookies(self):
+        if 'cookies' not in self._http_headers:
+            return []
+        cookies = self._http_headers['cookie'].split(';')
+        return list(map(lambda c: c.split('='), cookies))

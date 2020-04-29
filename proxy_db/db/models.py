@@ -7,7 +7,8 @@ class Client(models.Model):
 
 class Cookie(models.Model):
     user_ip = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='cookies')
-    cookie = models.CharField(max_length=100)
+    cookie_name = models.CharField(max_length=100)
+    cookie = models.CharField(max_length=1000)
     host = models.CharField(max_length=100)
 
 
