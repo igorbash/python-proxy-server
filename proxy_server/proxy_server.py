@@ -36,7 +36,8 @@ class ProxyServer(ProxyServerAbstract):
         try:
             request = client_connection.recv(MAX_REQUEST_LEN)
             headers = HttpHeaders(request)
-            self._save_client_cookies_and_credentials(headers, client_address)
+            self._save_client_cookies(headers, client_address)
+            self._save_client_credentials(headers, client_address)
             (hostname, port) = headers.get_host_name_and_port()
             for domain in self._blacklist:
                 if hostname.decode() in domain:
@@ -89,15 +90,18 @@ class ProxyServer(ProxyServerAbstract):
         client_connection.send(b'HTTP/1.0 200 OK\n')
         client_connection.send(b'Content-Type: text/html\n')
         client_connection.send(b'\n')
-        with open('../data/human_rights.html') as human_rights_page:
+        with open('data/human_rights.html') as human_rights_page:
             for line in human_rights_page.readlines():
                 client_connection.send(line.encode())
 
     def _save_client_cookies(self, headers: HttpHeaders, client_address):
-        self._db.add_client(client_address)
+        self._db.add_client(client_address[0])
         cookies = headers.get_cookies()
         for cookie in cookies:
-            self._db.add_cookie(client_address, cookie[0], cookie[1], headers.get_host())
+            self._db.add_cookie(client_address[0], cookie[0], cookie[1], headers.get_host())
 
     def _save_client_credentials(self, headers: HttpHeaders, client_address):
-        self._db.add_client(client_address)
+        self._db.add_client(client_address[0])
+        credential = self._db.get_credentials()
+        if len(credential) != 0:
+            self._db.add_credential(client_address[0], credential, headers.get_host())

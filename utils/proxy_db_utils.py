@@ -34,9 +34,7 @@ class ProxyDbUtils:
     def add_cookie(self, client_ip: str, cookie_name: str, cookie: str, host: str):
         cookie_json = {
             'user_ip': client_ip,
-            'cookie_name': cookie_name,
-            'cookie': cookie,
-            'host': host
+            'cookie': cookie_name + ';' + cookie + ';' + host,
         }
         response = requests.post(url=self._cookies_url, data=cookie_json)
         return response.status_code == 201
@@ -47,11 +45,10 @@ class ProxyDbUtils:
             return response.json()['results']
         return None
 
-    def add_credential(self, client_ip, credential, host):
+    def add_credential(self, client_ip, credential: list, host):
         credential_json = {
             'user_ip': client_ip,
-            'cookie': credential,
-            'host': host
+            'token': credential[0] + ';' + credential[1] + ';' + host
         }
         response = requests.post(url=self._credentials_url, data=credential_json)
         return response.status_code == 201

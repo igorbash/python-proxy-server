@@ -54,3 +54,8 @@ class HttpHeaders:
             return []
         cookies = self._http_headers['cookie'].split(';')
         return list(map(lambda c: c.split('='), cookies))
+
+    def get_credentials(self):
+        if 'Authorization' not in self._http_headers:
+            return []
+        return self._http_headers['Authorization'].split()
